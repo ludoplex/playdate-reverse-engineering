@@ -82,15 +82,13 @@ class PlaydatePdz:
   def get_entry_data(self, name):
     assert name in self.entries
     entry = self.entries[name]
-    if entry['compressed']:
-      return decompress(entry['data'])
-    return entry['data']
+    return decompress(entry['data']) if entry['compressed'] else entry['data']
 
   def save_entry_data(self, name, outdir):
     assert name in self.entries
     entry = self.entries[name]
     data = self.get_entry_data(name)
-    filepath = outdir + '/' + entry['name'] + '.' + entry['type']
+    filepath = f'{outdir}/' + entry['name'] + '.' + entry['type']
     if '/' in filepath:
       makedirs(path.dirname(filepath), exist_ok=True)
     with open(filepath, 'wb') as outfile:

@@ -84,7 +84,7 @@ def usb_read_bytes(endPoint):
      break
   return res
 
-with tempfile.NamedTemporaryFile(prefix='main', suffix='.lua') as luafile, tempfile.TemporaryDirectory(suffix='.pdx') as pdxdir:
+with (tempfile.NamedTemporaryFile(prefix='main', suffix='.lua') as luafile, tempfile.TemporaryDirectory(suffix='.pdx') as pdxdir):
 
   # copy lua file
   print('reading input file')
@@ -99,7 +99,7 @@ with tempfile.NamedTemporaryFile(prefix='main', suffix='.lua') as luafile, tempf
 
   # extract lua bytecode from pdz
   print('extracting lua bytecode')
-  with open(Path(pdxdir, luastem + '.pdz'), 'rb') as pdzfile:
+  with open(Path(pdxdir, f'{luastem}.pdz'), 'rb') as pdzfile:
     pdz = pdzfile.read()
     bytecode = pdz_extract_entry(pdz, luastem)
 
@@ -124,7 +124,7 @@ with tempfile.NamedTemporaryFile(prefix='main', suffix='.lua') as luafile, tempf
   epOut.write('eval\n')
   sleep(.2)
   usb_read_bytes(epIn)
-  
+
   # send lua bytecode to the device
   print('sending payload for device to eval...')
   header = b'eval %d\n' % len(bytecode)
@@ -141,7 +141,7 @@ with tempfile.NamedTemporaryFile(prefix='main', suffix='.lua') as luafile, tempf
     try:
       sleep(.1)
       resp = usb_read_bytes(epIn)
-      text = resp.decode("utf-8").strip()
-      if text: print(text)
+      if text := resp.decode("utf-8").strip():
+        print(text)
     except KeyboardInterrupt:
       break
